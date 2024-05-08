@@ -1,5 +1,6 @@
 import ftplib
 import os
+import progressbar
 import socket
 import sys
 from datetime import datetime
@@ -40,10 +41,13 @@ def copy_files(files, folder):
     if not os.path.exists(folder):
         os.mkdir(folder)
     os.chdir(folder)
-    for file in files:
-        print(f"{ORANGE}{file}{END} está sendo copiado para {folder}")
-        with open(f"{file}", "wb") as fp:
-            ftp.retrbinary(f"RETR {file}", fp.write)
+    for file in progressbar.progressbar(files, redirect_stdout=True):
+        try:
+            print(f"{ORANGE}{file}{END} está sendo copiado para {folder}")
+            with open(f"{file}", "wb") as fp:
+                ftp.retrbinary(f"RETR {file}", fp.write)
+        except:
+            continue
     os.chdir("../")
 
 
