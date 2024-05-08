@@ -5,7 +5,6 @@ import sys
 from datetime import datetime
 from dotenv import load_dotenv
 
-
 load_dotenv()
 user = os.getenv("USER")
 passwd = os.getenv("PASSWD")
@@ -18,6 +17,10 @@ IP, backup_name = sys.argv[1:]
 ftp = ftplib.FTP()
 
 
+def clear():
+    os.system("cls" if os.name == "nt" else "clear")
+
+
 def check_ftp_server(host, port=21):
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -26,7 +29,8 @@ def check_ftp_server(host, port=21):
         print(f"O servidor em {host} na porta {port} está disponível")
         return True
     except socket.error:
-        print(f"Falha ao conectar em {RED}{host}{END} na porta {RED}{port}{END}")
+        print(
+            f"Falha ao conectar em {RED}{host}{END} na porta {RED}{port}{END}")
         return False
     finally:
         sock.close()
@@ -82,4 +86,5 @@ def main():
 
 
 if __name__ == "__main__":
+    clear()
     main()
