@@ -45,10 +45,13 @@ def copy_files(files, folder):
 
 def ftp_connection():
     if check_ftp_server(IP):
-        ftp.connect(IP, timeout=5)
-        ftp.login(user=user, passwd=passwd)
-        print(f"Servidor FTP está respondendo em {IP}")
-        print(ftp.getwelcome(), "\n")
+        try:
+            ftp.connect(IP, timeout=5)
+            ftp.login(user=user, passwd=passwd)
+            print(f"Login realizado com sucesso em {IP}")
+            print(ftp.getwelcome(), "\n")
+        except Exception as e:
+            print(f"Falha ao realizar login >>> {RED}{e}{END}")
     else:
         print(f"Servidor FTP não está respondendo em {IP}")
 
