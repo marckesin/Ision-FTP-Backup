@@ -1,5 +1,6 @@
 import ftplib
 import os
+import socket
 import sys
 from datetime import datetime
 from dotenv import load_dotenv
@@ -17,21 +18,25 @@ IP, backup_name = sys.argv[1:]
 ftp = ftplib.FTP()
 
 
-def check_ftp_connection():
+def check_ftp_server(host, port=21):
     try:
-        ftp.connect(IP, timeout=5)
-        ftp.quit()
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(5)
+        sock.connect((host, port))
+        print(f"O servidor em {host} na porta {port} está disponível")
         return True
-    except ftplib.all_errors as e:
-        print(f"Erro ao conectar ao servidor FTP >> {RED}{e}{END}")
+    except socket.error:
+        print(f"Falha ao conectar em {RED}{host}{END} na porta {RED}{port}{END}")
         return False
+    finally:
+        sock.close()
 
 
 def copy_files(files, folder):
     if not os.path.exists(folder):
         os.mkdir(folder)
     os.chdir(folder)
-    for file in files[:]:
+    for file in files:
         print(f"{ORANGE}{file}{END} está sendo copiado para {folder}")
         with open(f"{file}", "wb") as fp:
             ftp.retrbinary(f"RETR {file}", fp.write)
@@ -39,7 +44,7 @@ def copy_files(files, folder):
 
 
 def ftp_connection():
-    if check_ftp_connection():
+    if check_ftp_server(IP):
         ftp.connect(IP, timeout=5)
         ftp.login(user=user, passwd=passwd)
         print(f"Servidor FTP está respondendo em {IP}")
